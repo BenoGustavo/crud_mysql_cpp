@@ -1,0 +1,28 @@
+# Project: hospital_crud
+# Makefile created by Dev-C++ 5.11
+
+CPP      = g++.exe -D__DEBUG__
+CC       = gcc.exe -D__DEBUG__
+WINDRES  = windres.exe
+OBJ      = crud_with_mysql.o
+LINKOBJ  = crud_with_mysql.o
+LIBS     = -L"D:/Programação/DEV C++/Dev-Cpp/MinGW64/lib" -L"D:/Programação/DEV C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/lib" -static-libgcc -L"C:/Program Files/MySQL/MySQL Server 8.0/lib" -lmysql "../../../../../../Program Files/MySQL/Connector C++ 8.0/lib64/vs14/mysqlcppconn.lib" "../../../../../../Program Files/MySQL/Connector C++ 8.0/lib64/mysqlcppconn-9-vs14.dll" -g3
+INCS     = -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/include" -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"C:/Program Files/MySQL/MySQL Server 8.0/include" -I"C:/Program Files/MySQL/MySQL Server 8.0/include/mysql" -I"C:/Program Files/MySQL/Connector C++ 8.0/include/jdbc"
+CXXINCS  = -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/include" -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/x86_64-w64-mingw32/include" -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include" -I"D:/Programação/DEV C++/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2/include/c++" -I"C:/Program Files/MySQL/MySQL Server 8.0/include" -I"C:/Program Files/MySQL/MySQL Server 8.0/include/mysql" -I"C:/Program Files/MySQL/Connector C++ 8.0/include/jdbc"
+BIN      = hospital_crud.exe
+CXXFLAGS = $(CXXINCS) -std=c++11 -g3
+CFLAGS   = $(INCS) -std=c++11 -g3
+RM       = rm.exe -f
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	${RM} $(OBJ) $(BIN)
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+crud_with_mysql.o: crud_with_mysql.cpp
+	$(CPP) -c crud_with_mysql.cpp -o crud_with_mysql.o $(CXXFLAGS)
