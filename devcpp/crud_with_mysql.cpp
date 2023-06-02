@@ -121,7 +121,7 @@ void createFuncionario(MYSQL* conn, const char* CPF, const char* nome, const cha
 // Function to read a funcionario by ID
 void readFuncionario(MYSQL* conn, int id) {
     char query[100];
-    snprintf(query, sizeof(query), "SELECT * FROM funcionario WHERE id_funcionario = %d", id);
+    snprintf(query, sizeof(query), "SELECT * from funcionario as f, endereco as e WHERE e.id_endereco = f.id_endereco WHERE id_funcionario = %d", id);
 
     MYSQL_RES* res = executeQuery(conn, query);
     
@@ -156,6 +156,25 @@ void readFuncionario(MYSQL* conn, int id) {
 
     }
     
+}
+
+// Reading all funcionarios
+void read_all_Funcionarios(MYSQL* conn) {
+    char query[100];
+    
+    snprintf(query, sizeof(query), "SELECT * from funcionario as f, endereco as e WHERE e.id_endereco = f.id_endereco");
+
+    MYSQL_RES* res = executeQuery(conn, query);
+    
+    if (res != nullptr) {
+        MYSQL_ROW row;
+        
+        while ((row = mysql_fetch_row(res)) != nullptr) {
+        	printf("\nPersonal info from funcionario (%s) - ID (%s)",row[2],row[0]);
+            std::cout << "\nID: " << row[0] << ", CPF: " << row[1] << ", Nome: " << row[2] << ", Email: " << row[3] << ", Telefone: " << row[4] << ", Funcao: " << row[5] << "\n\nAdress info:\nID Endereço: " << row[7] << ", Lougradouro: " << row[8] << ", Cep: " << row[9] << ", Bairro: " << row[10] << std::endl;
+		}
+	}
+
 }
 
 // Function to update a funcionario by ID
@@ -273,6 +292,7 @@ void deleteFuncionario(MYSQL* conn, int id) {
 
 
 int main() {
+	setlocale(LC_ALL,"portuguese");
     const char* HOST = "localhost";
     const char* USER = "root";
     const char* PASS = "root";
@@ -285,13 +305,16 @@ int main() {
 	
 	
     // Create a funcionario (working)
-    //createFuncionario(conn, "1234567890", "John Doe","john@gmail.com","2342342","logra","dev","242342422","45","vargem");
+    //createFuncionario(conn, "456", "nome2","gmail2@gmail.com","456","logra2","dev2","456","45","vargem");
 
     // Read a funcionario by ID (working)
     //readFuncionario(conn, 37);
+    
+    // Read all funcionario
+    read_all_Funcionarios(conn);
 
     // Update a funcionario (Update personal funcionario info but not the adress)
-    updateFuncionario(conn,31 ,"555555","Gustavo","gmail.com","326695585","ze da manga","dev","3333333","130","aaaaaaaaa");
+    //updateFuncionario(conn,31 ,"555555","Gustavo","gmail.com","326695585","ze da manga","dev","3333333","130","aaaaaaaaa");
     
     //Del funcionnario (Working)
 	//deleteFuncionario(conn,36);
@@ -300,4 +323,3 @@ int main() {
 
     return 0;
 }
-
