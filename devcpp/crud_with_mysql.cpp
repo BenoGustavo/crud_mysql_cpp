@@ -1880,9 +1880,176 @@ int main() {
 		
 		//Hospital
 		case '3':{
-			system("cls");
-			
-			break;
+			do{
+				system("cls");
+				printf("Hospital - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "\nPersonal INFO:" << std::endl;
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values...
+						createHospital(conn,nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Read (Need to fix read all function)
+					case '2':{
+						do{
+						system("cls");
+						printf("Hospital - Read\nWhat do you want to do?:\n\n");
+						printf("1 - Read all (don't work very well')\n2 - Read by ID\n\nType 3 to return.");
+						menu = getche();
+						
+						}while(menu > '3' || menu < '1');
+						
+						switch(menu){
+							//READ ALL
+							case '1':{
+								printf("\n\nALL DATAS FROM MEDICOS:\n\n");
+								read_all_datas(conn,"hospital");
+								printf("\n");
+								
+								system("pause");
+								goto start;
+								break;
+							}
+							
+							//READ BY ID
+							case '2':{
+								system("cls");
+								std::cout << "0 to leave." << std::endl;
+									
+								read_all_ids(conn,"hospital");
+								
+								do{	
+									printf("\n-=-=-=-=*-*-=-=-=-=\n");
+									std::cout << "\ninsert the id: " << std::endl;
+									std::cin >> ids;
+									
+									readHospital(conn, ids);
+								
+								}while(ids != 0);
+								
+								goto start;
+								break;
+							}
+							
+							//Return
+							case '3':{
+								goto start;
+								break;
+							}
+						}
+						
+						break;
+					}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "Personal INFO:" << std::endl;
+						
+						read_all_ids(conn,"hospital");
+						
+						printf("\n");
+						
+						std::cout << "\nInsert the Hospital ID: " << std::endl;
+						std::cin >> id_hospital;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values... (don't work)
+						updateHospital(conn,id_hospital,nome_create.c_str(),telefone_create.c_str(),email_create.c_str(),logradouro_endereco.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						system("cls");
+						printf("0 to return\n");
+						read_all_ids(conn,"hospital");
+						
+						std::cout << "\n\nInsert the ID: " << std::endl;
+						std::cin >> ids_create;
+						
+						if(ids_create == 0){
+							goto start;
+						}
+						
+						deleteHospital(conn,ids_create);
+						
+						goto start;
+						break;
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				
+				}
+				break;
+				
+			}while(menu > '5' || menu < '1');
 		}
 		
 		//Paciente
