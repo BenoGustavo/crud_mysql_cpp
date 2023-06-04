@@ -1230,7 +1230,7 @@ void createProntuario (MYSQL* conn, int id_doenca, int id_paciente, int id_medic
     return;
 }
 
-// Function to read a doenca by ID (NOT FINISHED YET)
+// Function to read a doenca by ID
 void readProntuario(MYSQL* conn, int id) {
     char query[100];
     snprintf(query, sizeof(query), "SELECT * from prontuario WHERE id_prontuario = %i", id);
@@ -1240,18 +1240,76 @@ void readProntuario(MYSQL* conn, int id) {
     if (res != nullptr) {
         MYSQL_ROW row;
         
-        while ((row = mysql_fetch_row(res)) != nullptr) {
+        row = mysql_fetch_row(res);
         	
-        	printf("Info from Doenca (%s)\n\n",row[0]);
-        	
-            std::cout << "ID: " << row[0] << ", Nome: " << row[1] << ", Remedio: " << row[2] << ", Sintomas: " << row[3] << std::endl;
-            
-            freeResultSet(res);
+        printf("INFO FROM PRONTUARIO\n");
+        std::cout << "ID do prontuario: " << row[0] << ", ID da doenca: " << row[1] << ", ID do paciente: " << row[2] << ", ID do medico: " << row[3] << "\n" << "Comentario: " << row[4] << "\n" << std::endl;
         
-		}
-
+        //Saving info from prontuario
+        int id_doenca =  atoi(row[1]), id_paciente = atoi(row[2]), id_medico = atoi(row[3]);
+        freeResultSet(res); //Limpando info do prontuario
+        
+        //Formating info from prontuario
+        snprintf(query, sizeof(query), "SELECT * FROM hospital_v2.doencas AS d JOIN hospital_v2.paciente AS p JOIN hospital_v2.medicos AS m WHERE d.id_doencas = '%i' AND p.id_paciente = '%i' AND m.id_medicos = '%i'",id_doenca,id_paciente,id_medico);
+    	res = executeQuery(conn, query);
+        
+        if (res != nullptr) {
+	        MYSQL_ROW row;
+	        
+	        row = mysql_fetch_row(res);
+	        	
+	        printf("INFO FROM PACIENTE\n");
+	        std::cout << "Nome (paciente): " << row[6] << ", CPF (paciente): " << row[5] << ", Email (Paciente) " << row[7] << "\nTelefone (Paciente): " << row[8] << ", Alergias (Paciente): " << row[9] << "\n"  << std::endl;
+	        
+			printf("INFO FROM MEDICO\n");
+	        std::cout << "Nome (medico): " << row[13] << ", CPF (medico): " << row[12] << ", Email (medico) " << row[14] << ", Telefone (medico): " << row[15] << "\nEspecializacao (medico): " << row[16] << "\n" << std::endl;
+	        
+	        printf("INFO FROM DOENCA\n");
+	        std::cout << "Nome (doenca): " << row[1] << ", Remedio: " << row[2] << ", Sintomas: " << row[3] << "\n" << std::endl;
+        
+    	}
     }
+}
+
+// Function to update a prontuario by ID
+void updateProntuario(MYSQL* conn, const int id_prontuario, const int id_doenca, const int id_paciente, const int id_medico, const char* comentario){
+	MYSQL_STMT* stmt = mysql_stmt_init(conn);
+	
+	//Updating prontuario
+    const char* update_query = "UPDATE prontuario SET id_doenca = ?, id_paciente = ?, id_medico = ? , comentario = ? WHERE id_prontuario = ?";
+    mysql_stmt_prepare(stmt, update_query, strlen(update_query));
+
+    MYSQL_BIND bind[5];
+    memset(bind, 0, sizeof(bind));
     
+    bind[0].buffer_type = MYSQL_TYPE_LONG;
+    bind[0].buffer = (void*)&id_doenca;
+    
+	bind[1].buffer_type = MYSQL_TYPE_LONG;
+    bind[1].buffer = (void*)&id_paciente;
+    
+    bind[2].buffer_type = MYSQL_TYPE_LONG;
+    bind[2].buffer = (void*)&id_medico;
+    
+    bind[3].buffer_type = MYSQL_TYPE_STRING;
+    bind[3].buffer = (void*)comentario;
+    bind[3].buffer_length = strlen(comentario);
+    
+    bind[4].buffer_type = MYSQL_TYPE_LONG;
+    bind[4].buffer = (void*)&id_prontuario;
+    
+    mysql_stmt_bind_param(stmt, bind);
+    mysql_stmt_execute(stmt);
+    
+    mysql_stmt_close(stmt);
+}
+
+// Function to delete a prontuario by ID
+void deleteProntuario(MYSQL* conn, int id){
+	char query[100];
+	
+    snprintf(query, sizeof(query), "DELETE FROM prontuario WHERE id_prontuario = %i", id);
+    executeQuery(conn, query);
 }
 
 int main() {
@@ -1375,8 +1433,18 @@ int main() {
     // Create a prontuario(working)
     //createProntuario (conn,2,5,10,"Esse cara e poggers");
     
-    // Read a prontuario by ID
-	//readPronturario(conn,1);
+    // Read a prontuario by ID (Working very well)
+	//readProntuario(conn,1);
+	
+	// Update a prontuario by ID (Working)
+	//updateProntuario(conn,1,2,5,10,"funcionadeuspf");
+	
+	// Delete a prontuario by ID (Working)
+	//deleteProntuario(conn,1);
+	
+	///////////////////
+	//FINESHED DEBUG//
+	/////////////////
 		
     disconnectFromDatabase(conn);
 
