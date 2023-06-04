@@ -1,5 +1,9 @@
 #include <iostream>
 #include <mysql.h>
+#include <conio.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string>
 
 // Function to establish a database connection
 MYSQL* connectToDatabase(const char* host, const char* user, const char* pass, const char* db_name) {
@@ -37,7 +41,7 @@ void freeResultSet(MYSQL_RES* res) {
     }
 }
 
-// Reading all data from every table
+// Reading all data from every row
 void read_all_datas(MYSQL* conn, const char* table) {
     char query[100];
     
@@ -51,6 +55,31 @@ void read_all_datas(MYSQL* conn, const char* table) {
         while ((row = mysql_fetch_row(res)) != nullptr) {
         	printf("\nPersonal info from funcionario (%s) - ID (%s)",row[2],row[0]);
             std::cout << "\nID: " << row[0] << ", CPF: " << row[1] << ", Nome: " << row[2] << ", Email: " << row[3] << ", Telefone: " << row[4] << ", Funcao: " << row[5] << "\n\nAdress info:\nID Endereço: " << row[7] << ", Lougradouro: " << row[8] << ", Cep: " << row[9] << ", Bairro: " << row[10] << std::endl;
+		}
+	}
+
+}
+
+// Reading all IDs from every table
+void read_all_ids(MYSQL* conn, const char* table) {
+    char query[100];
+    
+    snprintf(query, sizeof(query), "SELECT id_%s FROM %s",table,table);
+
+    MYSQL_RES* res = executeQuery(conn, query);
+    
+    if (res != nullptr) {
+        MYSQL_ROW row;
+        
+        int count = 0;
+        while ((row = mysql_fetch_row(res)) != nullptr) {
+        	printf("\nID's from all funcionarios:");
+            std::cout << "\nID: "<< row[0];
+            
+            if ((count % 5) == 0){
+            	printf("\n");
+			}
+            
 		}
 	}
 
@@ -289,8 +318,7 @@ void deleteFuncionario(MYSQL* conn, int id) {
 	//Del adress
 	snprintf(query, sizeof(query), "DELETE FROM endereco WHERE id_endereco = %i", id_address);
 	
-	executeQuery(conn, query);
-    freeResultSet(res);   
+	executeQuery(conn, query);  
 }
 
 /////////////////////////////
@@ -1445,8 +1473,260 @@ int main() {
 	///////////////////
 	//FINESHED DEBUG//
 	/////////////////
+	
+	char menu,start;
+	
+	//Create variables
+	std::string cpf_create,nome_create,email_create,telefone_create,logradouro_endereco,funcao_create,cep_endereco,numero_endereco,bairro_endereco;
+	int ids,ids_create;
+	
+	start:
+	
+	//Starting the main menu
+	do{
+		system("cls");
 		
-    disconnectFromDatabase(conn);
-
+		printf("Hospital - Menu\nInsert the desired table:\n\n");
+		printf("1 - Funcionario\n2 - Medico\n3 - Hospital\n4 - Paciente\n5 - Clinica\n6 - Doencas\n7 - Prontuario\n\nType 8 to exit.");
+		menu = getche();
+		
+	}while(menu > '8' || menu < '1');
+		
+	switch(menu){
+		
+		//Funcionario (Complete)
+		case '1':{
+			do{
+				system("cls");
+				printf("Funcionario - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "Personal INFO:" << std::endl;
+						std::cout << "Insert the CPF: " << std::endl;
+						std::getline(std::cin, cpf_create);
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "insert the cargo: " << std::endl;
+						std::getline(std::cin, funcao_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values...
+						createFuncionario(conn,cpf_create.c_str(),nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),funcao_create.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Read
+					case '2':{
+						do{
+						system("cls");
+						printf("Funcionario - Read\nWhat do you want to do?:\n\n");
+						printf("1 - Read all\n2 - Read by ID\n\nType 3 to return.");
+						menu = getche();
+						
+						}while(menu > '3' || menu < '1');
+						
+						switch(menu){
+							//READ ALL
+							case '1':{
+								printf("ALL DATAS FROM FUNCIONARIO:\n\n");
+								read_all_datas(conn,"funcionario");
+								printf("\n");
+								
+								system("pause");
+								goto start;
+								break;
+							}
+							
+							//READ BY ID
+							case '2':{
+								system("cls");
+								std::cout << "0 to leave." << std::endl;
+									
+								read_all_ids(conn,"funcionario");
+								
+								do{	
+									printf("\n-=-=-=-=*-*-=-=-=-=\n");
+									std::cout << "\ninsert the id: " << std::endl;
+									std::cin >> ids;
+									
+									readFuncionario(conn, ids);
+								
+								}while(ids != 0);
+								
+								goto start;
+								break;
+							}
+							
+							//Return
+							case '3':{
+								goto start;
+								break;
+							}
+						}
+						
+						break;
+					}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "Personal INFO:" << std::endl;
+						
+						read_all_ids(conn,"funcionario");
+						
+						printf("\n");
+						
+						std::cout << "Insert the ID: " << std::endl;
+						std::cin >> ids_create;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "Insert the CPF: " << std::endl;
+						std::getline(std::cin, cpf_create);
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "insert the cargo: " << std::endl;
+						std::getline(std::cin, funcao_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values...
+						updateFuncionario(conn,ids_create,cpf_create.c_str(),nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),funcao_create.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						system("cls");
+						printf("0 to return\n");
+						read_all_ids(conn,"funcionario");
+						
+						std::cout << "\nInsert the ID: " << std::endl;
+						std::cin >> ids_create;
+						
+						if(ids_create == 0){
+							goto start;
+						}
+						
+						deleteFuncionario(conn,ids_create);
+						
+						goto start;
+						break;
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				}
+				
+				break;
+			}while(menu > '5' || menu < '1');
+		}
+		
+		//Medico
+		case '2':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Hospital
+		case '3':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Paciente
+		case '4':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Clinica
+		case '5':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Doencas
+		case '6':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Prontuario
+		case '7':{
+			system("cls");
+			
+			break;
+		}
+		
+		//Exit
+		case '8':{
+			printf("\n\n\nExiting...");
+			break;
+		}
+	}
+		
+	disconnectFromDatabase(conn);
     return 0;
 }
