@@ -104,20 +104,20 @@ void createFuncionario(MYSQL* conn, const char* CPF, const char* nome, const cha
     memset(endereco_info, 0, sizeof(endereco_info));
     
     endereco_info[0].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[0].buffer = (void*)cep;
-    endereco_info[0].buffer_length = strlen(cep);
+    endereco_info[0].buffer = (void*)logradouro;
+    endereco_info[0].buffer_length = strlen(logradouro);
     
     endereco_info[1].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[1].buffer = (void*)numero;
-    endereco_info[1].buffer_length = strlen(numero);
-	
-    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[2].buffer = (void*)bairro;
-    endereco_info[2].buffer_length = strlen(bairro);
+    endereco_info[1].buffer = (void*)cep;
+    endereco_info[1].buffer_length = strlen(cep);
     
+    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
+    endereco_info[2].buffer = (void*)numero;
+    endereco_info[2].buffer_length = strlen(numero);
+	
     endereco_info[3].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[3].buffer = (void*)logradouro;
-    endereco_info[3].buffer_length = strlen(logradouro);
+    endereco_info[3].buffer = (void*)bairro;
+    endereco_info[3].buffer_length = strlen(bairro);
     
     mysql_stmt_bind_param(stmt, endereco_info);
     mysql_stmt_execute(stmt);
@@ -340,20 +340,20 @@ void createMedico (MYSQL* conn, const char* CPF, const char* nome, const char* e
     memset(endereco_info, 0, sizeof(endereco_info));
     
     endereco_info[0].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[0].buffer = (void*)cep;
-    endereco_info[0].buffer_length = strlen(cep);
+    endereco_info[0].buffer = (void*)logradouro;
+    endereco_info[0].buffer_length = strlen(logradouro);
     
     endereco_info[1].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[1].buffer = (void*)numero;
-    endereco_info[1].buffer_length = strlen(numero);
-	
-    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[2].buffer = (void*)bairro;
-    endereco_info[2].buffer_length = strlen(bairro);
+    endereco_info[1].buffer = (void*)cep;
+    endereco_info[1].buffer_length = strlen(cep);
     
+    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
+    endereco_info[2].buffer = (void*)numero;
+    endereco_info[2].buffer_length = strlen(numero);
+	
     endereco_info[3].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[3].buffer = (void*)logradouro;
-    endereco_info[3].buffer_length = strlen(logradouro);
+    endereco_info[3].buffer = (void*)bairro;
+    endereco_info[3].buffer_length = strlen(bairro);
     
     mysql_stmt_bind_param(stmt, endereco_info);
     mysql_stmt_execute(stmt);
@@ -583,20 +583,20 @@ void createHospital (MYSQL* conn, const char* nome, const char* email, const cha
     memset(endereco_info, 0, sizeof(endereco_info));
     
     endereco_info[0].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[0].buffer = (void*)cep;
-    endereco_info[0].buffer_length = strlen(cep);
+    endereco_info[0].buffer = (void*)logradouro;
+    endereco_info[0].buffer_length = strlen(logradouro);
     
     endereco_info[1].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[1].buffer = (void*)numero;
-    endereco_info[1].buffer_length = strlen(numero);
-	
-    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[2].buffer = (void*)bairro;
-    endereco_info[2].buffer_length = strlen(bairro);
+    endereco_info[1].buffer = (void*)cep;
+    endereco_info[1].buffer_length = strlen(cep);
     
+    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
+    endereco_info[2].buffer = (void*)numero;
+    endereco_info[2].buffer_length = strlen(numero);
+	
     endereco_info[3].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[3].buffer = (void*)logradouro;
-    endereco_info[3].buffer_length = strlen(logradouro);
+    endereco_info[3].buffer = (void*)bairro;
+    endereco_info[3].buffer_length = strlen(bairro);
     
     mysql_stmt_bind_param(stmt, endereco_info);
     mysql_stmt_execute(stmt);
@@ -698,10 +698,11 @@ void updateHospital(MYSQL* conn, int id, const char* newnome, const char* newtel
     row = mysql_fetch_row(res);
     
     int id_address = atoi(row[4]);
-    mysql_free_result(res);
+    
+	mysql_free_result(res);
 	
 	//Updating Hospital
-    const char* update_query = "UPDATE hospital nome = ?, telefone = ?, email = ?, WHERE id_hospital = ?";
+    const char* update_query = "UPDATE hospital SET nome = ?, telefone = ?, email = ?, WHERE id_hospital = ?";
     mysql_stmt_prepare(stmt, update_query, strlen(update_query));
 
     MYSQL_BIND bind[4];
@@ -784,7 +785,6 @@ void deleteHospital(MYSQL* conn, int id) {
 	snprintf(query, sizeof(query), "DELETE FROM endereco WHERE id_endereco = %i", id_address);
 	
 	executeQuery(conn, query);
-    freeResultSet(res);   
 }
 
 ///////////////////////////////
@@ -804,20 +804,20 @@ void createPaciente (MYSQL* conn, const char* CPF, const char* nome, const char*
     memset(endereco_info, 0, sizeof(endereco_info));
     
     endereco_info[0].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[0].buffer = (void*)cep;
-    endereco_info[0].buffer_length = strlen(cep);
+    endereco_info[0].buffer = (void*)logradouro;
+    endereco_info[0].buffer_length = strlen(logradouro);
     
     endereco_info[1].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[1].buffer = (void*)numero;
-    endereco_info[1].buffer_length = strlen(numero);
-	
-    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[2].buffer = (void*)bairro;
-    endereco_info[2].buffer_length = strlen(bairro);
+    endereco_info[1].buffer = (void*)cep;
+    endereco_info[1].buffer_length = strlen(cep);
     
+    endereco_info[2].buffer_type = MYSQL_TYPE_STRING;
+    endereco_info[2].buffer = (void*)numero;
+    endereco_info[2].buffer_length = strlen(numero);
+	
     endereco_info[3].buffer_type = MYSQL_TYPE_STRING;
-    endereco_info[3].buffer = (void*)logradouro;
-    endereco_info[3].buffer_length = strlen(logradouro);
+    endereco_info[3].buffer = (void*)bairro;
+    endereco_info[3].buffer_length = strlen(bairro);
     
     mysql_stmt_bind_param(stmt, endereco_info);
     mysql_stmt_execute(stmt);
@@ -1403,7 +1403,7 @@ int main() {
     //readHospital(conn,1);
     
     // Update a Hospital (Update adress but not update hospital info...)
-    //updateHospital(conn,1 ,"Gustavo","326695585","gmail.com","ze da manga","3333333","130","aaaaaaaaa");
+    //updateHospital(conn,11 ,"Gustavo","326695585","gmail.com","ze da manga","3333333","130","aaaaaaaaa");
     
     // Delete Hospital (working)
     //deleteHospital(conn,2);
@@ -1489,7 +1489,7 @@ int main() {
 		system("cls");
 		
 		printf("Hospital - Menu\nInsert the desired table:\n\n");
-		printf("1 - Funcionario\n2 - Medico\n3 - Hospital\n4 - Paciente\n5 - Clinica\n6 - Doencas\n7 - Prontuario\n\nType 8 to exit.");
+		printf("1 - Funcionario\n2 - Medico\n3 - Hospital (Work in progress)\n4 - Paciente\n5 - Clinica\n6 - Doencas\n7 - Prontuario\n\nType 8 to exit.");
 		menu = getche();
 		
 	}while(menu > '8' || menu < '1');
@@ -1883,7 +1883,7 @@ int main() {
 			do{
 				system("cls");
 				printf("Hospital - Menu\nWhat do you want to do?:\n");
-				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				printf("1 - Create\n2 - Read\n3 - Update (Only updates the adress)\n4 - Delete\n\nType 5 to return.");
 				menu = getche();
 				
 				switch(menu){
@@ -1916,6 +1916,10 @@ int main() {
 						
 						std::cout << "insert the bairro: " << std::endl;
 						std::getline(std::cin, bairro_endereco);
+						
+						//Debuging variables
+						//std::cout << nome_create << email_create << telefone_create << logradouro_endereco << cep_endereco << numero_endereco << bairro_endereco << std::endl;
+						//system("pause");
 						
 						//I needed to tranform all the string values to char values...
 						createHospital(conn,nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
@@ -2023,21 +2027,20 @@ int main() {
 					
 					//Delete
 					case '4':{
-						system("cls");
-						printf("0 to return\n");
-						read_all_ids(conn,"hospital");
-						
-						std::cout << "\n\nInsert the ID: " << std::endl;
-						std::cin >> ids_create;
-						
-						if(ids_create == 0){
-							goto start;
-						}
-						
-						deleteHospital(conn,ids_create);
-						
-						goto start;
-						break;
+						do{
+							system("cls");
+							printf("0 to return\n");
+							read_all_ids(conn,"hospital");
+							
+							std::cout << "\n\nInsert the ID: " << std::endl;
+							std::cin >> ids_create;
+							
+							if (ids_create == 0){
+								goto start;
+							}
+							
+							deleteHospital(conn,ids_create);
+						}while (1 == 1);
 					}
 					
 					//return
