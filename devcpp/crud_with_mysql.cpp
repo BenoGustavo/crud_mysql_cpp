@@ -41,7 +41,7 @@ void freeResultSet(MYSQL_RES* res) {
     }
 }
 
-// Reading all data from every row
+// Reading all data from every row in tables (funcionario,medicos,paciente)
 void read_all_datas(MYSQL* conn, const char* table) {
     char query[100];
     
@@ -53,8 +53,8 @@ void read_all_datas(MYSQL* conn, const char* table) {
         MYSQL_ROW row;
         
         while ((row = mysql_fetch_row(res)) != nullptr) {
-        	printf("\nPersonal info from %s (%s) - ID (%s)",table,row[2],row[0]);
-            std::cout << "\nID: " << row[0] << ", CPF: " << row[1] << ", Nome: " << row[2] << ", Email: " << row[3] << ", Telefone: " << row[4] << ", Funcao: " << row[5] << "\n\nAdress info:\nID Endereço: " << row[7] << ", Lougradouro: " << row[8] << ", Cep: " << row[9] << ", Bairro: " << row[10] << std::endl;
+        	printf("\n-=Personal info from %s (%s) - ID (%s)=-",table,row[2],row[0]);
+            std::cout << "\nID: " << row[0] << ", CPF: " << row[1] << ", Nome: " << row[2] << ", Email: " << row[3] << ", Telefone: " << row[4] << ", Funcao: " << row[5] << "\n\nAdress info:\nID Endereço: " << row[7] << ", Lougradouro: " << row[8] << ", Cep: " << row[9] << ", Numero residencial: " << row[10] << ", Bairro: " << row[11] << std::endl;
 		}
 	}
 
@@ -683,6 +683,25 @@ void readHospital(MYSQL* conn, int id) {
     
 }
 
+// Reads all the hospital table and their adress
+void read_all_datas_hospital(MYSQL* conn, const char* table) {
+    char query[100];
+    
+    snprintf(query, sizeof(query), "SELECT * from %s as f, endereco as e WHERE e.id_endereco = f.id_endereco",table);
+
+    MYSQL_RES* res = executeQuery(conn, query);
+    
+    if (res != nullptr) {
+        MYSQL_ROW row;
+        
+        while ((row = mysql_fetch_row(res)) != nullptr) {
+        	printf("\nHospital info ID (%s)",table,row[2],row[0]);
+            std::cout << "\nNome: " << row[1] << ", Telefone: " << row[2] << ", Email: " << row[3] << "\n\nAdress info:\nID Endereço: " << row[4] << ", Lougradouro: " << row[6] << ", Cep: " << row[7] << ", Numero residencial: " << row[8] << ", Bairro: " << row[9] << std::endl;
+		}
+	}
+
+}
+
 // Function to update a Hospital by ID
 void updateHospital(MYSQL* conn, int id, const char* newnome, const char* newtelefone, const char* newemail, const char* newlogradouro, const char* newcep, const char* newnumero, const char* newbairro) {
 	MYSQL_STMT* stmt = mysql_stmt_init(conn);
@@ -701,8 +720,8 @@ void updateHospital(MYSQL* conn, int id, const char* newnome, const char* newtel
     
 	mysql_free_result(res);
 	
-	//Updating Hospital
-    const char* update_query = "UPDATE hospital SET nome = ?, telefone = ?, email = ?, WHERE id_hospital = ?";
+	//Updating Hospital (FIXED, TINHA UMA ',' ANTES DO WHERE E N�O TAVA FUNCIOONADNO HAHAHHAHAHAHAHAAHAHAHAHAHAHAHHAHA)
+    const char* update_query = "UPDATE hospital SET nome = ?, telefone = ?, email = ? WHERE id_hospital = ?";
     mysql_stmt_prepare(stmt, update_query, strlen(update_query));
 
     MYSQL_BIND bind[4];
@@ -725,7 +744,11 @@ void updateHospital(MYSQL* conn, int id, const char* newnome, const char* newtel
     
     mysql_stmt_bind_param(stmt, bind);
     mysql_stmt_execute(stmt);
-        
+    
+    // Closing and reinitializing the statement
+    mysql_stmt_close(stmt);
+    stmt = mysql_stmt_init(conn);
+    
 	//Updating adress
 	
     const char* update_query_adress = "UPDATE endereco SET logradouro = ?, cep = ?, numero = ?, bairro = ? WHERE id_endereco = ?";
@@ -1117,7 +1140,6 @@ void deleteClinica(MYSQL* conn, int id) {
     
 }
 
-// Function to create a prontuario
 
 //////////////////////////////
 //Crud MYSQL - DOENCA TABLE//
@@ -1489,7 +1511,7 @@ int main() {
 		system("cls");
 		
 		printf("Hospital - Menu\nInsert the desired table:\n\n");
-		printf("1 - Funcionario\n2 - Medico\n3 - Hospital (Work in progress)\n4 - Paciente\n5 - Clinica\n6 - Doencas\n7 - Prontuario\n\nType 8 to exit.");
+		printf("1 - Funcionario\n2 - Medico\n3 - Hospital\n4 - Paciente\n5 - Clinica\n6 - Doencas\n7 - Prontuario\n\nType 8 to exit.");
 		menu = getche();
 		
 	}while(menu > '8' || menu < '1');
@@ -1680,7 +1702,7 @@ int main() {
 			}while(menu > '5' || menu < '1');
 		}
 		
-		//Medico
+		//Medico (Complete)
 		case '2':{
 			do{
 				system("cls");
@@ -1878,12 +1900,12 @@ int main() {
 			}while(menu > '5' || menu < '1');
 		}
 		
-		//Hospital
+		//Hospital (Complete)
 		case '3':{
 			do{
 				system("cls");
 				printf("Hospital - Menu\nWhat do you want to do?:\n");
-				printf("1 - Create\n2 - Read\n3 - Update (Only updates the adress)\n4 - Delete\n\nType 5 to return.");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
 				menu = getche();
 				
 				switch(menu){
@@ -1933,7 +1955,7 @@ int main() {
 						do{
 						system("cls");
 						printf("Hospital - Read\nWhat do you want to do?:\n\n");
-						printf("1 - Read all (don't work very well')\n2 - Read by ID\n\nType 3 to return.");
+						printf("1 - Read all\n2 - Read by ID\n\nType 3 to return.");
 						menu = getche();
 						
 						}while(menu > '3' || menu < '1');
@@ -1942,7 +1964,7 @@ int main() {
 							//READ ALL
 							case '1':{
 								printf("\n\nALL DATAS FROM MEDICOS:\n\n");
-								read_all_datas(conn,"hospital");
+								read_all_datas_hospital(conn,"hospital");
 								printf("\n");
 								
 								system("pause");
@@ -2055,11 +2077,190 @@ int main() {
 			}while(menu > '5' || menu < '1');
 		}
 		
-		//Paciente
+		//Paciente (Complete)
 		case '4':{
-			system("cls");
-			
-			break;
+			do{
+				system("cls");
+				printf("Paciente - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "Personal INFO:" << std::endl;
+						std::cout << "Insert the CPF: " << std::endl;
+						std::getline(std::cin, cpf_create);
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "insert alergias: " << std::endl;
+						std::getline(std::cin, funcao_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values...
+						createPaciente(conn,cpf_create.c_str(),nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),funcao_create.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Read
+					case '2':{
+						do{
+						system("cls");
+						printf("Paciente - Read\nWhat do you want to do?:\n\n");
+						printf("1 - Read all\n2 - Read by ID\n\nType 3 to return.");
+						menu = getche();
+						
+						}while(menu > '3' || menu < '1');
+						
+						switch(menu){
+							//READ ALL
+							case '1':{
+								printf("ALL DATAS FROM PACIENTES:\n\n");
+								read_all_datas(conn,"paciente");
+								printf("\n");
+								
+								system("pause");
+								goto start;
+								break;
+							}
+							
+							//READ BY ID
+							case '2':{
+								system("cls");
+								std::cout << "0 to leave." << std::endl;
+									
+								read_all_ids(conn,"paciente");
+								
+								do{	
+									printf("\n-=-=-=-=*-*-=-=-=-=\n");
+									std::cout << "\ninsert the id: " << std::endl;
+									std::cin >> ids;
+									
+									readPaciente(conn, ids);
+								
+								}while(ids != 0);
+								
+								goto start;
+								break;
+							}
+							
+							//Return
+							case '3':{
+								goto start;
+								break;
+							}
+						}
+						
+						break;
+					}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "Personal INFO:" << std::endl;
+						
+						read_all_ids(conn,"paciente");
+						
+						printf("\n");
+						
+						std::cout << "Insert the ID: " << std::endl;
+						std::cin >> ids_create;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "Insert the CPF: " << std::endl;
+						std::getline(std::cin, cpf_create);
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the email: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the telefone: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						std::cout << "insert alergias: " << std::endl;
+						std::getline(std::cin, funcao_create);
+						
+						std::cout << "\nAdress INFO:\n" << std::endl;
+						
+						std::cout << "insert the logradouro: " << std::endl;
+						std::getline(std::cin, logradouro_endereco);
+						
+						std::cout << "insert the CEP: " << std::endl;
+						std::getline(std::cin, cep_endereco);
+						
+						std::cout << "insert the numero residencial: " << std::endl;
+						std::getline(std::cin, numero_endereco);
+						
+						std::cout << "insert the bairro: " << std::endl;
+						std::getline(std::cin, bairro_endereco);
+						
+						//I needed to tranform all the string values to char values...
+						updatePaciente(conn,ids_create,cpf_create.c_str(),nome_create.c_str(),email_create.c_str(),telefone_create.c_str(),logradouro_endereco.c_str(),funcao_create.c_str(),cep_endereco.c_str(),numero_endereco.c_str(),bairro_endereco.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						do{
+							system("cls");
+							printf("0 to return\n");
+							read_all_ids(conn,"paciente");
+							
+							std::cout << "\nInsert the ID: " << std::endl;
+							std::cin >> ids_create;
+							
+							if(ids_create == 0){
+								goto start;
+							}
+							
+							deletePaciente(conn,ids_create);
+						}while(1 == 1);
+						
+						goto start;
+						break;
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				}
+				
+				break;
+			}while(menu > '5' || menu < '1');
 		}
 		
 		//Clinica
