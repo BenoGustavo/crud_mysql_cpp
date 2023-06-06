@@ -1504,6 +1504,10 @@ int main() {
 	std::string cpf_create,nome_create,email_create,telefone_create,logradouro_endereco,funcao_create,cep_endereco,numero_endereco,bairro_endereco;
 	int ids,ids_create,id_hospital;
 	
+	int id_doencaxx,id_prontuarioxx;
+	int id_pacientexx;
+	int id_medicoxx;
+	
 	start:
 	
 	//Starting the main menu
@@ -2263,25 +2267,364 @@ int main() {
 			}while(menu > '5' || menu < '1');
 		}
 		
-		//Clinica
+		//Clinica (Complete)
 		case '5':{
-			system("cls");
-			
-			break;
+			do{
+				system("cls");
+				printf("Clinica - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "Clinica INFO:" << std::endl;
+						
+						read_all_ids(conn,"hospital");
+						
+						std::cout << "\n\nInsert Especialização da clinica: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert hospital id: " << std::endl;
+						std::cin >> ids;
+						
+						//I needed to tranform all the string values to char values...
+						createClinica(conn,nome_create.c_str(),ids);
+						
+						goto start;
+						break;
+					}
+					
+					//Read
+					case '2':{
+							system("cls");
+							std::cout << "0 to leave." << std::endl;
+									
+							read_all_ids(conn,"clinica");
+								
+							do{	
+								printf("\n-=-=-=-=*-*-=-=-=-=\n");
+								std::cout << "\ninsert the id: " << std::endl;
+								std::cin >> ids;
+									
+								readClinica(conn, ids);
+								
+							}while(ids != 0);
+								
+								goto start;
+								break;
+							}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "Clinica INFO:" << std::endl;
+						
+						read_all_ids(conn,"clinica");
+						
+						printf("\n");
+						
+						read_all_ids(conn,"hospital");
+						
+						std::cout << "\n\nInsert the Clinica ID: " << std::endl;
+						std::cin >> ids;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "Insert Especialização da clinica: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "insert hospital id: " << std::endl;
+						std::cin >> ids;
+						
+						//I needed to tranform all the string values to char values... (don't work)
+						updateClinica(conn,ids,nome_create.c_str(),ids);
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						do{
+							system("cls");
+							printf("0 to return\n");
+							read_all_ids(conn,"clinica");
+							
+							std::cout << "\n\nInsert the ID: " << std::endl;
+							std::cin >> ids_create;
+							
+							if (ids_create == 0){
+								goto start;
+							}
+							
+							deleteClinica(conn,ids_create);
+						}while (1 == 1);
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				
+				}
+				break;
+				
+			}while(menu > '5' || menu < '1');
 		}
 		
 		//Doencas
 		case '6':{
-			system("cls");
-			
-			break;
+			do{
+				system("cls");
+				printf("Doencas - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "DOENCAS INFO:" << std::endl;
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the remedio: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the sintomas: " << std::endl;
+						std::getline(std::cin, telefone_create);
+						
+						//I needed to tranform all the string values to char values...
+						createDoenca(conn,nome_create.c_str(),email_create.c_str(),telefone_create.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Read
+					case '2':{
+						system("cls");
+						std::cout << "0 to leave." << std::endl;
+									
+						read_all_ids(conn,"doencas");
+								
+						do{	
+							printf("\n-=-=-=-=*-*-=-=-=-=\n");
+							std::cout << "\ninsert the id: " << std::endl;
+							std::cin >> ids;
+									
+							readDoenca(conn, ids);
+								
+						}while(ids != 0);
+								
+						goto start;
+					}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "DOENCAS INFO:" << std::endl;
+						
+						read_all_ids(conn,"doencas");
+						
+						printf("\n");
+						
+						std::cout << "Insert the ID: " << std::endl;
+						std::cin >> ids_create;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "Insert the nome: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						std::cout << "Insert the remedio: " << std::endl;
+						std::getline(std::cin, email_create);
+						
+						std::cout << "insert the sintomas: " << std::endl;
+						std::getline(std::cin, telefone_create);
+				
+						//I needed to tranform all the string values to char values...
+						updateDoencas(conn,ids_create,nome_create.c_str(),email_create.c_str(),telefone_create.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						do{
+							system("cls");
+							printf("0 to return\n");
+							read_all_ids(conn,"doencas");
+							
+							std::cout << "\nInsert the ID: " << std::endl;
+							std::cin >> ids_create;
+							
+							if(ids_create == 0){
+								goto start;
+							}
+							
+							deleteDoencas(conn,ids_create);
+						}while(1 == 1);
+						
+						goto start;
+						break;
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				}
+				
+				break;
+			}while(menu > '5' || menu < '1');
 		}
 		
 		//Prontuario
 		case '7':{
-			system("cls");
-			
-			break;
+			do{
+				system("cls");
+				printf("Prontuario - Menu\nWhat do you want to do?:\n");
+				printf("1 - Create\n2 - Read\n3 - Update\n4 - Delete\n\nType 5 to return.");
+				menu = getche();
+				
+				switch(menu){
+					
+					//Create
+					case '1':{
+						system("cls");
+						
+						std::cout << "Prontuario INFO:" << std::endl;
+						
+						read_all_ids(conn,"doencas");
+						
+						std::cout << "\nInsert the id doenca: " << std::endl;
+						std::cin >> id_doencaxx;
+						
+						read_all_ids(conn,"paciente");
+						
+						std::cout << "\nInsert the id paciente: " << std::endl;
+						std::cin >> id_pacientexx;
+						
+						read_all_ids(conn,"medicos");
+						
+						std::cout << "\nInsert the id medico: " << std::endl;
+						std::cin >> id_medicoxx;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "\nInsert a comment about the PRONTUARIO: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						//I needed to tranform all the string values to char values...
+						createProntuario(conn,id_doencaxx,id_pacientexx,id_medicoxx,nome_create.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Read
+					case '2':{
+						system("cls");
+						std::cout << "0 to leave." << std::endl;
+									
+						read_all_ids(conn,"prontuario");
+								
+						do{	
+							printf("\n-=-=-=-=*-*-=-=-=-=\n");
+							std::cout << "\ninsert the id: " << std::endl;
+							std::cin >> ids;
+							
+							if(ids == 0){
+								goto start;
+							}
+									
+							readProntuario(conn, ids);
+								
+						}while(ids != 0);
+								
+						goto start;
+					}
+					
+					//Update
+					case '3':{
+						system("cls");
+						
+						std::cout << "Prontuario INFO:" << std::endl;
+						
+						read_all_ids(conn,"prontuario");
+						std::cout << "\nInsert the id prontuario: " << std::endl;
+						std::cin >> id_prontuarioxx;
+						
+						read_all_ids(conn,"doencas");
+						
+						std::cout << "\nInsert the id doenca: " << std::endl;
+						std::cin >> id_doencaxx;
+						
+						read_all_ids(conn,"paciente");
+						
+						std::cout << "\nInsert the id paciente: " << std::endl;
+						std::cin >> id_pacientexx;
+						
+						read_all_ids(conn,"medicos");
+						
+						std::cout << "\nInsert the id medico: " << std::endl;
+						std::cin >> id_medicoxx;
+						
+						std::cin.ignore();  // Discard the remaining newline character
+						
+						std::cout << "\nInsert a comment about the PRONTUARIO: " << std::endl;
+						std::getline(std::cin, nome_create);
+						
+						//I needed to tranform all the string values to char values...
+						updateProntuario(conn,id_prontuarioxx,id_doencaxx,id_pacientexx,id_medicoxx,nome_create.c_str());
+						
+						goto start;
+						break;
+					}
+					
+					//Delete
+					case '4':{
+						do{
+							system("cls");
+							printf("0 to return\n");
+							read_all_ids(conn,"prontuario");
+							
+							std::cout << "\nInsert the ID: " << std::endl;
+							std::cin >> ids_create;
+							
+							if(ids_create == 0){
+								goto start;
+							}
+							
+							deleteProntuario(conn,ids_create);
+						}while(1 == 1);
+						
+						goto start;
+						break;
+					}
+					
+					//return
+					case '5':{
+						goto start;
+						break;
+					}
+				}
+				
+				break;
+			}while(menu > '5' || menu < '1');
 		}
 		
 		//Exit
